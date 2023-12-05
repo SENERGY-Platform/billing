@@ -1,0 +1,14 @@
+{
+  "api_port": "8080",
+  "opencost_url": "http://opencost.opencost:9003",
+  "namespace_analytics": "analytics-pipelines",
+  "mongo_url": "mongodb://localhost:27017",
+  "mongo_repl_set": true,
+  "mongo_collection": "trees",
+  "mongo_table": "billing",
+  "server": false,
+  "job": true,
+  "job_months": 1,
+  "debug": true,
+  "dev_overwrite_user_id": ""
+}
