@@ -46,7 +46,7 @@ type CostControllers = map[string]CostEntry
 type CostControllerEntries = map[string]CostEntry
 
 type CostWithChildren struct {
-	CostEntry
+	Month    CostEntry                   `json:"month"`
 	Children map[string]CostWithChildren `json:"children"`
 }
 

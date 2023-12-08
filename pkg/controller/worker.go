@@ -131,7 +131,7 @@ func (c *Controller) getCostTrees(from, to time.Time) (res model.UserCostTree, e
 				}
 
 				containerTree[containerName] = model.CostWithChildren{
-					CostEntry: model.CostEntry{
+					Month: model.CostEntry{
 						Cpu:             containerValue.CpuCost,
 						Ram:             containerValue.RamCost,
 						Storage:         containerValue.PvCost,
@@ -141,7 +141,7 @@ func (c *Controller) getCostTrees(from, to time.Time) (res model.UserCostTree, e
 			}
 
 			controllerTree[controllerName] = model.CostWithChildren{
-				CostEntry: model.CostEntry{
+				Month: model.CostEntry{
 					Cpu:             controllerValue.CpuCost,
 					Ram:             controllerValue.RamCost,
 					Storage:         controllerValue.PvCost,
@@ -151,7 +151,7 @@ func (c *Controller) getCostTrees(from, to time.Time) (res model.UserCostTree, e
 			}
 		}
 		userTree[namespace] = model.CostWithChildren{
-			CostEntry: model.CostEntry{
+			Month: model.CostEntry{
 				Cpu:             overviewValue.CpuCost,
 				Ram:             overviewValue.RamCost,
 				Storage:         overviewValue.PvCost,
