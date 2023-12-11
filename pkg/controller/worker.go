@@ -177,6 +177,7 @@ func (c *Controller) StoreMonthlyBillingInformation(nMonths int) error {
 		}
 
 		for userid, tree := range trees {
+			log.Println("Storing tree for user " + userid)
 			billingInformation := model.BillingInformation{From: from, UserId: userid, To: to, CreatedAt: now, Tree: tree}
 			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 			err = c.db.SetBillingInformation(ctx, billingInformation)
