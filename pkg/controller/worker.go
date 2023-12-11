@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -175,6 +176,8 @@ func (c *Controller) StoreMonthlyBillingInformation(nMonths int) error {
 		if err != nil {
 			return err
 		}
+
+		log.Println("Got " + strconv.Itoa(len(trees)) + " trees")
 
 		for userid, tree := range trees {
 			log.Println("Storing tree for user " + userid)
