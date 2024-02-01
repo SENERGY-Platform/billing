@@ -22,6 +22,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/SENERGY-Platform/billing/pkg/model"
@@ -74,16 +75,34 @@ func (c *Controller) getCostControllers(from, to time.Time) (allocation opencost
 }
 
 func (c *Controller) getCostTrees(from, to time.Time) (res model.UserCostTree, err error) {
-	overview, err := c.getCostOverview(from, to)
-	if err != nil {
-		return
-	}
-	controllers, err := c.getCostControllers(from, to)
-	if err != nil {
-		return res, err
-	}
-
-	containers, err := c.getCostContainers(from, to)
+	var overview, controllers, containers opencost.AllocationResponse
+	wg := sync.WaitGroup{}
+	wg.Add(3)
+	go func() {
+		defer wg.Done()
+		var temperr error
+		overview, temperr = c.getCostOverview(from, to)
+		if temperr != nil {
+			err = err
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		var temperr error
+		controllers, temperr = c.getCostControllers(from, to)
+		if temperr != nil {
+			err = err
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		var temperr error
+		containers, temperr = c.getCostContainers(from, to)
+		if temperr != nil {
+			err = err
+		}
+	}()
+	wg.Wait()
 	if err != nil {
 		return res, err
 	}
@@ -160,6 +179,15 @@ func (c *Controller) getCostTrees(from, to time.Time) (res model.UserCostTree, e
 			},
 			Children: controllerTree,
 		}
+
+		processCost, err := c.GetProcessTree(controllers, userId, from, to)
+		if err != nil {
+			return res, err
+		}
+		for key, value := range processCost {
+			userTree[key] = value
+		}
+
 		res[userId] = userTree
 	}
 	return res, nil

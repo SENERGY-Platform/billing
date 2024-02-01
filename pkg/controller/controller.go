@@ -18,6 +18,8 @@ package controller
 
 import (
 	"context"
+	"github.com/prometheus/client_golang/api"
+	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 
 	"github.com/SENERGY-Platform/billing/pkg/configuration"
 	"github.com/SENERGY-Platform/billing/pkg/database"
@@ -28,11 +30,27 @@ type Controller struct {
 	opencost *opencost.Client
 	config   configuration.Config
 	db       *database.Mongo
+
+	prometheus v1.API
 }
 
 func NewController(ctx context.Context, conf configuration.Config, fatal func(err error), db *database.Mongo) (*Controller, error) {
 	opencostClient, err := opencost.NewClient(conf)
-	controller := &Controller{opencost: opencostClient, config: conf, db: db}
+	if err != nil {
+		return nil, err
+	}
+	prometheusClient, err := api.NewClient(api.Config{
+		Address: conf.PrometheusUrl,
+	})
+	if err != nil {
+		return nil, err
+	}
+	controller := &Controller{
+		opencost:   opencostClient,
+		config:     conf,
+		db:         db,
+		prometheus: v1.NewAPI(prometheusClient),
+	}
 	if err != nil {
 		return nil, err
 	}

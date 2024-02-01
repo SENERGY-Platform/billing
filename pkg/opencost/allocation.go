@@ -19,18 +19,25 @@ package opencost
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"time"
 )
 
 func (c *Client) Allocation(options *AllocationOptions) (AllocationResponse, error) {
-	url := c.config.OpencostUrl + "/allocation" + options.toQuery()
+	query := options.toQuery()
+	url := c.config.OpencostUrl + "/allocation" + query
 	cacheE, ok := c.cache[url]
 	if ok && time.Now().Before(cacheE.validUntil) {
 		return cacheE.value.(AllocationResponse), nil
 	}
 	var allo AllocationResponse
 
+	log.Println("query opencost:", query)
+	start := time.Now()
+	defer func() {
+		log.Printf("query opencost done: %v in %v", query, time.Since(start).String())
+	}()
 	resp, err := c.httpClient.Get(url)
 	if err != nil {
 		return allo, err
