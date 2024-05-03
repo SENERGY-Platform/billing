@@ -83,7 +83,7 @@ func (c *Controller) getCostTrees(from, to time.Time) (res model.UserCostTree, e
 		var temperr error
 		overview, temperr = c.getCostOverview(from, to)
 		if temperr != nil {
-			err = err
+			err = temperr
 		}
 	}()
 	go func() {
@@ -91,7 +91,7 @@ func (c *Controller) getCostTrees(from, to time.Time) (res model.UserCostTree, e
 		var temperr error
 		controllers, temperr = c.getCostControllers(from, to)
 		if temperr != nil {
-			err = err
+			err = temperr
 		}
 	}()
 	go func() {
@@ -99,7 +99,7 @@ func (c *Controller) getCostTrees(from, to time.Time) (res model.UserCostTree, e
 		var temperr error
 		containers, temperr = c.getCostContainers(from, to)
 		if temperr != nil {
-			err = err
+			err = temperr
 		}
 	}()
 	wg.Wait()
