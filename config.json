@@ -1,6 +1,6 @@
 {
   "api_port": "8080",
-  "calculator_url": "http://opencost-wrapper.opencost:8080",
+  "calculator_url": "http://wrapper.opencost:8080",
   "namespace_analytics": "analytics-pipelines",
   "mongo_url": "mongodb://localhost:27017",
   "mongo_repl_set": true,
