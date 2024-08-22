@@ -32,31 +32,19 @@ type ConfigStruct struct {
 	JobMonths int  `json:"job_months"`
 	Server    bool `json:"server"`
 
-	ApiPort     string `json:"api_port"`
-	OpencostUrl string `json:"opencost_url"`
+	ApiPort       string `json:"api_port"`
+	CalculatorUrl string `json:"calculator_url"`
 
 	MongoUrl        string `json:"mongo_url"`
 	MongoReplSet    bool   `json:"mongo_repl_set"`
 	MongoCollection string `json:"mongo_collection"`
 	MongoTable      string `json:"mongo_table"`
 
-	NamespaceAnalytics string `json:"namespace_analytics"`
+	KeycloakUrl    string `json:"keycloak_url"`
+	KeycloakClient string `json:"keycloak_client"`
+	KeycloakSecret string `json:"keycloak_secret"`
 
-	Debug              bool   `json:"debug"`
-	DevOverwriteUserId string `json:"dev_overwrite_user_id"`
-
-	PrometheusUrl                          string `json:"prometheus_url"`
-	UserProcessCostFractionQuery           string `json:"user_process_cost_fraction_query"`
-	ProcessMarshallerCostFractionQuery     string `json:"process_marshaller_cost_fraction_query"`
-	UserMarshallerCostFractionQuery        string `json:"user_marshaller_cost_fraction_query"`
-	UserProcessDefinitionCostFractionQuery string `json:"user_process_definition_cost_fraction_query"`
-	UserProcessIoCostFractionQuery         string `json:"user_process_io_cost_fraction_query"`
-
-	ProcessCostSources     []string `json:"process_cost_sources"`
-	MarshallingCostSources []string `json:"marshalling_cost_sources"`
-	ProcessIoCostSources   []string `json:"process_io_cost_sources"`
-
-	ProcessCostSourceToInstanceIdPlaceholderForProcessDefCostFraction map[string]string `json:"process_cost_source_to_instance_id_placeholder_for_process_def_cost_fraction"`
+	Debug bool `json:"debug"`
 }
 
 type Config = *ConfigStruct

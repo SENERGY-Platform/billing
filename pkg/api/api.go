@@ -68,10 +68,6 @@ func Router(config configuration.Config, controller *controller.Controller) http
 }
 
 func getUserId(config configuration.Config, request *http.Request) (string, error) {
-	if config.DevOverwriteUserId != "" {
-		log.Println("WARNING: Overwriting user id, THIS MUST NOT BE ENABLED IN PRODUCTIVE DEPLOYMENT!")
-		return config.DevOverwriteUserId, nil
-	}
 	forUser := request.URL.Query().Get("for_user")
 	if forUser != "" {
 		roles := strings.Split(request.Header.Get("X-User-Roles"), ", ")

@@ -19,45 +19,13 @@ package model
 import (
 	"time"
 
-	"github.com/SENERGY-Platform/billing/pkg/opencost"
+	"github.com/SENERGY-Platform/cost-calculator/pkg/model"
 )
 
-type CostEntry struct {
-	Cpu                      float64 `json:"cpu"`
-	Ram                      float64 `json:"ram"`
-	Storage                  float64 `json:"storage"`
-	opencost.AllocationEntry `json:"-"`
-}
-
-type CostOverview = map[CostType]CostEntry
-
-type CostOverviewEntries = map[CostType]CostEntry
-
-type CostType = string
-
-const CostTypeAnalytics CostType = "analytics"
-
-type CostContainers = map[string]CostEntry
-
-type CostContainerEntries = map[string]CostEntry
-
-type CostControllers = map[string]CostEntry
-
-type CostControllerEntries = map[string]CostEntry
-
-type CostWithChildren struct {
-	Month    CostEntry                   `json:"month"`
-	Children map[string]CostWithChildren `json:"children"`
-}
-
-type CostTree map[string]CostWithChildren
-
-type UserCostTree map[string]CostTree
-
 type BillingInformation struct {
-	From      time.Time `json:"from"`
-	To        time.Time `json:"to"`
-	CreatedAt time.Time `json:"created_at"`
-	UserId    string    `json:"-"`
-	Tree      CostTree  `json:"tree"`
+	From      time.Time      `json:"from"`
+	To        time.Time      `json:"to"`
+	CreatedAt time.Time      `json:"created_at"`
+	UserId    string         `json:"-"`
+	Tree      model.CostTree `json:"tree"`
 }

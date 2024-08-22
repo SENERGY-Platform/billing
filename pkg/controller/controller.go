@@ -18,42 +18,31 @@ package controller
 
 import (
 	"context"
-	"github.com/prometheus/client_golang/api"
-	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 
+	gocloak "github.com/Nerzal/gocloak/v13"
 	"github.com/SENERGY-Platform/billing/pkg/configuration"
 	"github.com/SENERGY-Platform/billing/pkg/database"
-	"github.com/SENERGY-Platform/billing/pkg/opencost"
+	"github.com/SENERGY-Platform/cost-calculator/pkg/client"
 )
 
 type Controller struct {
-	opencost *opencost.Client
-	config   configuration.Config
-	db       *database.Mongo
-
-	prometheus v1.API
+	calc           client.Client
+	config         configuration.Config
+	keycloakClient *gocloak.GoCloak
+	db             *database.Mongo
 }
 
-func NewController(ctx context.Context, conf configuration.Config, fatal func(err error), db *database.Mongo) (*Controller, error) {
-	opencostClient, err := opencost.NewClient(conf)
-	if err != nil {
-		return nil, err
-	}
-	prometheusClient, err := api.NewClient(api.Config{
-		Address: conf.PrometheusUrl,
-	})
-	if err != nil {
-		return nil, err
-	}
+func NewController(ctx context.Context, conf configuration.Config, fatal func(err error), db *database.Mongo) *Controller {
+	calc := client.New(conf.CalculatorUrl)
+
+	keycloakClient := gocloak.NewClient(conf.KeycloakUrl)
+
 	controller := &Controller{
-		opencost:   opencostClient,
-		config:     conf,
-		db:         db,
-		prometheus: v1.NewAPI(prometheusClient),
-	}
-	if err != nil {
-		return nil, err
+		calc:           calc,
+		config:         conf,
+		db:             db,
+		keycloakClient: keycloakClient,
 	}
 
-	return controller, nil
+	return controller
 }

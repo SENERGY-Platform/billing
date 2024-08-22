@@ -35,10 +35,7 @@ func Start(ctx context.Context, cancel context.CancelFunc, config configuration.
 		return wg, err
 	}
 
-	ctrl, err := controller.NewController(ctx, config, fatal, db)
-	if err != nil {
-		return wg, err
-	}
+	ctrl := controller.NewController(ctx, config, fatal, db)
 
 	if config.Job {
 		err = ctrl.StoreMonthlyBillingInformation(config.JobMonths)
