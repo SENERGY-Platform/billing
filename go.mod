@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	github.com/Nerzal/gocloak/v13 v13.9.0
-	github.com/SENERGY-Platform/cost-calculator v0.0.22
+	github.com/SENERGY-Platform/cost-calculator v0.0.23
 	github.com/google/uuid v1.6.0
 	github.com/julienschmidt/httprouter v1.3.0
 	go.mongodb.org/mongo-driver v1.17.0
