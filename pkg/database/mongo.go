@@ -82,7 +82,7 @@ func (db *Mongo) Transaction(ctx context.Context) (resultCtx context.Context, cl
 	})
 
 	return resultCtx, func(success bool) error {
-		defer session.EndSession(context.Background())
+		defer session.EndSession(resultCtx)
 		var err error
 		if success {
 			err = session.CommitTransaction(resultCtx)

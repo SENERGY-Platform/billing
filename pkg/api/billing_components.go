@@ -59,7 +59,7 @@ func listBillingComponentsHandler(config configuration.Config, controller *contr
 			c.Error(errors.Join(model.GetError(http.StatusBadRequest), err))
 			return
 		}
-		overview, err := controller.ListAvailableBillingInformation(userId)
+		overview, err := controller.ListAvailableBillingInformation(c.Request.Context(), userId)
 		if err != nil {
 			c.Error(errors.Join(model.GetError(http.StatusInternalServerError), err))
 			return
@@ -93,7 +93,7 @@ func getMonthlyBillingComponentsHandler(config configuration.Config, controller 
 			c.Error(errors.Join(model.GetError(http.StatusBadRequest), err))
 			return
 		}
-		overview, err := controller.GetBillingInformation(userId, time.Date(path.Year, time.Month(path.Month), 1, 0, 0, 0, 0, time.UTC))
+		overview, err := controller.GetBillingInformation(c.Request.Context(), userId, time.Date(path.Year, time.Month(path.Month), 1, 0, 0, 0, 0, time.UTC))
 		if err != nil {
 			c.Error(errors.Join(model.GetError(http.StatusInternalServerError), err))
 			return

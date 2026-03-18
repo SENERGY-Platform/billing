@@ -26,7 +26,7 @@ import (
 	"github.com/SENERGY-Platform/billing/pkg/model"
 )
 
-func (c *Controller) StoreMonthlyBillingInformation(nMonths int) error {
+func (c *Controller) StoreMonthlyBillingInformation(ctx context.Context, nMonths int) error {
 	now := time.Now().UTC()
 
 	usersOffset := 0
@@ -34,12 +34,12 @@ func (c *Controller) StoreMonthlyBillingInformation(nMonths int) error {
 	hasMoreUsers := true
 
 	for hasMoreUsers {
-		jwt, err := c.keycloakClient.LoginClient(context.Background(), c.config.KeycloakClient, c.config.KeycloakSecret, "master")
+		jwt, err := c.keycloakClient.LoginClient(ctx, c.config.KeycloakClient, c.config.KeycloakSecret, "master")
 		if err != nil {
 			return err
 		}
 
-		users, err := c.keycloakClient.GetUsers(context.Background(), jwt.AccessToken, "master", gocloak.GetUsersParams{
+		users, err := c.keycloakClient.GetUsers(ctx, jwt.AccessToken, "master", gocloak.GetUsersParams{
 			First: &usersOffset,
 			Max:   &userLimit,
 		})
@@ -61,8 +61,8 @@ func (c *Controller) StoreMonthlyBillingInformation(nMonths int) error {
 				}
 				log.Logger.Info("store tree", "user_id", *user.ID)
 				billingInformation := model.BillingInformation{From: from, UserId: *user.ID, To: to, CreatedAt: now, Tree: tree}
-				ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-				err = c.db.SetBillingInformation(ctx, billingInformation)
+				timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				err = c.db.SetBillingInformation(timeoutCtx, billingInformation)
 				cancel()
 				if err != nil {
 					return err

@@ -23,14 +23,14 @@ import (
 	"github.com/SENERGY-Platform/billing/pkg/model"
 )
 
-func (this *Controller) GetBillingInformation(userId string, from time.Time) (trees []model.BillingInformation, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+func (this *Controller) GetBillingInformation(ctx context.Context, userId string, from time.Time) (trees []model.BillingInformation, err error) {
+	timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
-	return this.db.GetBillingInformation(ctx, userId, from)
+	return this.db.GetBillingInformation(timeoutCtx, userId, from)
 }
 
-func (this *Controller) ListAvailableBillingInformation(userId string) (dates []time.Time, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+func (this *Controller) ListAvailableBillingInformation(ctx context.Context, userId string) (dates []time.Time, err error) {
+	timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
-	return this.db.ListAvailableBillingInformation(ctx, userId)
+	return this.db.ListAvailableBillingInformation(timeoutCtx, userId)
 }
