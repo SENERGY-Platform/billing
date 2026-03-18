@@ -1,0 +1,135 @@
+basePath: /
+definitions:
+  model.BillingInformation:
+    properties:
+      created_at:
+        type: string
+      from:
+        type: string
+      to:
+        type: string
+      tree:
+        $ref: '#/definitions/model.CostTree'
+    type: object
+  model.CostEntry:
+    properties:
+      cpu:
+        type: number
+      ram:
+        type: number
+      requests:
+        type: number
+      storage:
+        type: number
+    type: object
+  model.CostTree:
+    additionalProperties:
+      $ref: '#/definitions/model.CostWithChildren'
+    type: object
+  model.CostWithChildren:
+    properties:
+      children:
+        additionalProperties:
+          $ref: '#/definitions/model.CostWithChildren'
+        type: object
+      estimation_month:
+        $ref: '#/definitions/model.CostEntry'
+      month:
+        $ref: '#/definitions/model.CostEntry'
+    type: object
+info:
+  contact: {}
+  description: Gets billing information for users
+  title: billing API
+paths:
+  /billing-components:
+    get:
+      description: Returns all months for which billing information exists for the
+        resolved user.
+      parameters:
+      - description: Target user id (admin only)
+        in: query
+        name: for_user
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: List available billing periods
+      tags:
+      - billing-components
+  /billing-components/{year}/{month}:
+    get:
+      description: Returns billing information for a specific year and month for the
+        resolved user.
+      parameters:
+      - description: Target user id (admin only)
+        in: query
+        name: for_user
+        type: string
+      - description: Year
+        in: path
+        name: year
+        required: true
+        type: integer
+      - description: Month (1-12)
+        in: path
+        name: month
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.BillingInformation'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get billing details for month
+      tags:
+      - billing-components
+  /doc:
+    get:
+      description: Returns the generated Swagger document for this service.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get OpenAPI document
+      tags:
+      - documentation
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -42,6 +42,13 @@ type userQuery struct {
 	ForUser string `form:"for_user"`
 }
 
+// Start godoc
+// @title billing API
+// @description Gets billing information for users
+// @BasePath /
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 func Start(ctx context.Context, wg *sync.WaitGroup, config configuration.Config, controller *controller.Controller) (err error) {
 	log.Logger.Info("start api")
 	gin.SetMode(gin.ReleaseMode)

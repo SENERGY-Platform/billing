@@ -37,7 +37,23 @@ type billingMonthPath struct {
 }
 
 func BillingComponentEndpoints(router *gin.Engine, config configuration.Config, controller *controller.Controller) {
-	router.GET("/billing-components", func(c *gin.Context) {
+	router.GET("/billing-components", listBillingComponentsHandler(config, controller))
+	router.GET("/billing-components/:year/:month", getMonthlyBillingComponentsHandler(config, controller))
+
+}
+
+// listBillingComponentsHandler godoc
+// @Summary List available billing periods
+// @Description Returns all months for which billing information exists for the resolved user.
+// @Tags billing-components
+// @Produce json
+// @Param for_user query string false "Target user id (admin only)"
+// @Success 200 {array} string
+// @Failure 400 {string} ErrorResponse
+// @Failure 500 {string} ErrorResponse
+// @Router /billing-components [get]
+func listBillingComponentsHandler(config configuration.Config, controller *controller.Controller) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		userId, err := getUserId(c)
 		if err != nil {
 			c.Error(errors.Join(model.GetError(http.StatusBadRequest), err))
@@ -49,9 +65,23 @@ func BillingComponentEndpoints(router *gin.Engine, config configuration.Config, 
 			return
 		}
 		c.JSON(http.StatusOK, overview)
-	})
+	}
+}
 
-	router.GET("/billing-components/:year/:month", func(c *gin.Context) {
+// getMonthlyBillingComponentsHandler godoc
+// @Summary Get billing details for month
+// @Description Returns billing information for a specific year and month for the resolved user.
+// @Tags billing-components
+// @Produce json
+// @Param for_user query string false "Target user id (admin only)"
+// @Param year path int true "Year"
+// @Param month path int true "Month (1-12)"
+// @Success 200 {array} model.BillingInformation
+// @Failure 400 {string} ErrorResponse
+// @Failure 500 {string} ErrorResponse
+// @Router /billing-components/{year}/{month} [get]
+func getMonthlyBillingComponentsHandler(config configuration.Config, controller *controller.Controller) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		userId, err := getUserId(c)
 		if err != nil {
 			c.Error(errors.Join(model.GetError(http.StatusBadRequest), err))
@@ -69,6 +99,5 @@ func BillingComponentEndpoints(router *gin.Engine, config configuration.Config, 
 			return
 		}
 		c.JSON(http.StatusOK, overview)
-	})
-
+	}
 }

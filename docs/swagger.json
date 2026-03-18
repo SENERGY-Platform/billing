@@ -1,0 +1,203 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Gets billing information for users",
+        "title": "billing API",
+        "contact": {}
+    },
+    "basePath": "/",
+    "paths": {
+        "/billing-components": {
+            "get": {
+                "description": "Returns all months for which billing information exists for the resolved user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing-components"
+                ],
+                "summary": "List available billing periods",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Target user id (admin only)",
+                        "name": "for_user",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing-components/{year}/{month}": {
+            "get": {
+                "description": "Returns billing information for a specific year and month for the resolved user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing-components"
+                ],
+                "summary": "Get billing details for month",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Target user id (admin only)",
+                        "name": "for_user",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Month (1-12)",
+                        "name": "month",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.BillingInformation"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/doc": {
+            "get": {
+                "description": "Returns the generated Swagger document for this service.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "documentation"
+                ],
+                "summary": "Get OpenAPI document",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.BillingInformation": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "tree": {
+                    "$ref": "#/definitions/model.CostTree"
+                }
+            }
+        },
+        "model.CostEntry": {
+            "type": "object",
+            "properties": {
+                "cpu": {
+                    "type": "number"
+                },
+                "ram": {
+                    "type": "number"
+                },
+                "requests": {
+                    "type": "number"
+                },
+                "storage": {
+                    "type": "number"
+                }
+            }
+        },
+        "model.CostTree": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/model.CostWithChildren"
+            }
+        },
+        "model.CostWithChildren": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/model.CostWithChildren"
+                    }
+                },
+                "estimation_month": {
+                    "$ref": "#/definitions/model.CostEntry"
+                },
+                "month": {
+                    "$ref": "#/definitions/model.CostEntry"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
