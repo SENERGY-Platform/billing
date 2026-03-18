@@ -17,67 +17,58 @@
 package api
 
 import (
-	"encoding/json"
+	"errors"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/SENERGY-Platform/billing/pkg/configuration"
 	"github.com/SENERGY-Platform/billing/pkg/controller"
-	"github.com/SENERGY-Platform/billing/pkg/log"
-	"github.com/SENERGY-Platform/go-service-base/struct-logger/attributes"
-	"github.com/julienschmidt/httprouter"
+	"github.com/SENERGY-Platform/billing/pkg/model"
+	"github.com/gin-gonic/gin"
 )
 
 func init() {
 	endpoints = append(endpoints, BillingComponentEndpoints)
 }
 
-func BillingComponentEndpoints(router *httprouter.Router, config configuration.Config, controller *controller.Controller) {
-	router.GET("/billing-components", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		userId, err := getUserId(config, request)
+type billingMonthPath struct {
+	Year  int `uri:"year" binding:"required"`
+	Month int `uri:"month" binding:"required"`
+}
+
+func BillingComponentEndpoints(router *gin.Engine, config configuration.Config, controller *controller.Controller) {
+	router.GET("/billing-components", func(c *gin.Context) {
+		userId, err := getUserId(c)
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
+			c.Error(errors.Join(model.GetError(http.StatusBadRequest), err))
 			return
 		}
 		overview, err := controller.ListAvailableBillingInformation(userId)
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			c.Error(errors.Join(model.GetError(http.StatusInternalServerError), err))
 			return
 		}
-		writer.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(writer).Encode(overview)
-		if err != nil {
-			log.Logger.Error("encode billing components response", attributes.ErrorKey, err)
-		}
+		c.JSON(http.StatusOK, overview)
 	})
 
-	router.GET("/billing-components/:year/:month", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		userId, err := getUserId(config, request)
+	router.GET("/billing-components/:year/:month", func(c *gin.Context) {
+		userId, err := getUserId(c)
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
+			c.Error(errors.Join(model.GetError(http.StatusBadRequest), err))
 			return
 		}
-		year, err := strconv.Atoi(params.ByName("year"))
+		path := billingMonthPath{}
+		err = c.ShouldBindUri(&path)
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
+			c.Error(errors.Join(model.GetError(http.StatusBadRequest), err))
 			return
 		}
-		month, err := strconv.Atoi(params.ByName("month"))
+		overview, err := controller.GetBillingInformation(userId, time.Date(path.Year, time.Month(path.Month), 1, 0, 0, 0, 0, time.UTC))
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
+			c.Error(errors.Join(model.GetError(http.StatusInternalServerError), err))
 			return
 		}
-		overview, err := controller.GetBillingInformation(userId, time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC))
-		if err != nil {
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		writer.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(writer).Encode(overview)
-		if err != nil {
-			log.Logger.Error("encode monthly billing components response", attributes.ErrorKey, err)
-		}
+		c.JSON(http.StatusOK, overview)
 	})
 
 }
