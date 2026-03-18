@@ -18,13 +18,14 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/SENERGY-Platform/billing/pkg/configuration"
 	"github.com/SENERGY-Platform/billing/pkg/controller"
+	"github.com/SENERGY-Platform/billing/pkg/log"
+	"github.com/SENERGY-Platform/go-service-base/struct-logger/attributes"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -47,7 +48,7 @@ func BillingComponentEndpoints(router *httprouter.Router, config configuration.C
 		writer.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(writer).Encode(overview)
 		if err != nil {
-			fmt.Println("ERROR: " + err.Error())
+			log.Logger.Error("encode billing components response", attributes.ErrorKey, err)
 		}
 	})
 
@@ -75,7 +76,7 @@ func BillingComponentEndpoints(router *httprouter.Router, config configuration.C
 		writer.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(writer).Encode(overview)
 		if err != nil {
-			fmt.Println("ERROR: " + err.Error())
+			log.Logger.Error("encode monthly billing components response", attributes.ErrorKey, err)
 		}
 	})
 

@@ -1,6 +1,6 @@
 module github.com/SENERGY-Platform/billing
 
-go 1.23.0
+go 1.26.1
 
 require (
 	github.com/Nerzal/gocloak/v13 v13.9.0
@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/SENERGY-Platform/go-service-base/struct-logger v0.6.0
 	github.com/go-resty/resty/v2 v2.7.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect

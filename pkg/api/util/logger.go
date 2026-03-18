@@ -17,9 +17,10 @@
 package util
 
 import (
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/SENERGY-Platform/billing/pkg/log"
 )
 
 func NewLogger(handler http.Handler) *LoggerMiddleWare {
@@ -43,9 +44,18 @@ func (this *LoggerMiddleWare) ServeHTTP(w http.ResponseWriter, request *http.Req
 
 func (this *LoggerMiddleWare) log(request *http.Request, response *ResponseWriterWithStatusCodeLog, t time.Time) {
 	method := request.Method
-	path := request.URL
+	path := request.URL.String()
 	status := response.Status
-	log.Printf("[%v] %v %v %v\n", method, path, status, time.Since(t))
+	duration := time.Since(t)
+	if status >= http.StatusInternalServerError {
+		log.Logger.Error("http request", "method", method, "path", path, "status", status, "duration", duration)
+		return
+	}
+	if status >= http.StatusBadRequest {
+		log.Logger.Warn("http request", "method", method, "path", path, "status", status, "duration", duration)
+		return
+	}
+	log.Logger.Info("http request", "method", method, "path", path, "status", status, "duration", duration)
 }
 
 type ResponseWriterWithStatusCodeLog struct {

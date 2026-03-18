@@ -13,5 +13,6 @@
   "keycloak_client": "billing",
   "keycloak_secret": "",
   "debug": true,
-  "dev_overwrite_user_id": ""
+  "dev_overwrite_user_id": "",
+  "log_handler": "json"
 }

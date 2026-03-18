@@ -19,12 +19,13 @@ package database
 import (
 	"context"
 	"errors"
-	"log"
 	"reflect"
 	"sync"
 	"time"
 
 	"github.com/SENERGY-Platform/billing/pkg/configuration"
+	"github.com/SENERGY-Platform/billing/pkg/log"
+	"github.com/SENERGY-Platform/go-service-base/struct-logger/attributes"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
@@ -89,7 +90,7 @@ func (db *Mongo) Transaction(ctx context.Context) (resultCtx context.Context, cl
 			err = session.AbortTransaction(resultCtx)
 		}
 		if err != nil {
-			log.Println("ERROR: unable to finish mongo transaction", err)
+			log.Logger.Error("unable to finish mongo transaction", attributes.ErrorKey, err)
 		}
 		return err
 	}, nil
@@ -126,7 +127,12 @@ func (db *Mongo) ensureCompoundIndex(collection *mongo.Collection, indexname str
 }
 
 func (db *Mongo) Disconnect() {
-	log.Println(db.client.Disconnect(context.Background()))
+	err := db.client.Disconnect(context.Background())
+	if err != nil {
+		log.Logger.Error("unable to disconnect mongo client", attributes.ErrorKey, err)
+		return
+	}
+	log.Logger.Debug("mongo client disconnected")
 }
 
 func getBsonFieldName(obj interface{}, fieldName string) (bsonName string, err error) {

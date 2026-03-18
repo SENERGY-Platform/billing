@@ -18,11 +18,11 @@ package controller
 
 import (
 	"context"
-	"log"
 
 	"time"
 
 	"github.com/Nerzal/gocloak/v13"
+	"github.com/SENERGY-Platform/billing/pkg/log"
 	"github.com/SENERGY-Platform/billing/pkg/model"
 )
 
@@ -54,12 +54,12 @@ func (c *Controller) StoreMonthlyBillingInformation(nMonths int) error {
 				to := time.Date(now.Year(), now.Month()-time.Month(i-1), 1, 0, 0, 0, 0, time.UTC)
 				from := time.Date(now.Year(), now.Month()-time.Month(i), 1, 0, 0, 0, 0, time.UTC)
 
-				log.Println("Fetching monthly billing information from " + from.Format(time.RFC3339) + " to " + to.Format(time.RFC3339))
+				log.Logger.Info("fetch monthly billing information", "from", from.Format(time.RFC3339), "to", to.Format(time.RFC3339))
 				tree, err := c.calc.GetTree("Bearer "+jwt.AccessToken, true, &from, &to, user.ID)
 				if err != nil {
 					return err
 				}
-				log.Println("Storing tree for user " + *user.ID)
+				log.Logger.Info("store tree", "user_id", *user.ID)
 				billingInformation := model.BillingInformation{From: from, UserId: *user.ID, To: to, CreatedAt: now, Tree: tree}
 				ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 				err = c.db.SetBillingInformation(ctx, billingInformation)
