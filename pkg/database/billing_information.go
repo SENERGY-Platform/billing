@@ -49,7 +49,7 @@ func (db *Mongo) initBillingInformation() (err error) {
 		return err
 	}
 
-	collection := db.client.Database(db.config.MongoTable).Collection(db.config.MongoCollection)
+	collection := db.client.Database(db.config.MongoDatabase).Collection(db.config.MongoCollection)
 	err = db.ensureCompoundIndex(collection, "userFromindex", true, false, useridKey, fromKey)
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func (db *Mongo) initBillingInformation() (err error) {
 }
 
 func (db *Mongo) billingInformationCollection() *mongo.Collection {
-	return db.client.Database(db.config.MongoTable).Collection(db.config.MongoCollection)
+	return db.client.Database(db.config.MongoDatabase).Collection(db.config.MongoCollection)
 }
 
 func (db *Mongo) GetBillingInformation(ctx context.Context, userId string, from time.Time) (trees []model.BillingInformation, err error) {

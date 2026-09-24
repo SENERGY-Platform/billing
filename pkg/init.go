@@ -40,6 +40,7 @@ func Start(ctx context.Context, cancel context.CancelFunc, config configuration.
 	if config.Job {
 		err = ctrl.StoreMonthlyBillingInformation(ctx, config.JobMonths)
 		if err != nil {
+			db.Disconnect()
 			return wg, err
 		}
 	}
@@ -47,6 +48,7 @@ func Start(ctx context.Context, cancel context.CancelFunc, config configuration.
 	if config.Server {
 		err = api.Start(ctx, wg, config, ctrl)
 		if err != nil {
+			db.Disconnect()
 			return wg, err
 		}
 	} else {
