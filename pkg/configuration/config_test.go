@@ -177,6 +177,38 @@ func TestConfigFormattingMasksMongoPassword(t *testing.T) {
 	}
 }
 
+func TestConfigFormattingMasksKeycloakSecret(t *testing.T) {
+	t.Setenv("KEYCLOAK_SECRET", "s3cr3t-client")
+	var cfg Config
+	captureStdout(t, func() {
+		var err error
+		if cfg, err = Load("../../config.json"); err != nil {
+			t.Error(err)
+		}
+	})
+	b, err := json.Marshal(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	outputs := map[string]string{
+		"json": string(b),
+		"%v":   fmt.Sprintf("%v", cfg),
+		"%+v":  fmt.Sprintf("%+v", *cfg),
+		"%#v":  fmt.Sprintf("%#v", *cfg),
+	}
+	for name, s := range outputs {
+		if strings.Contains(s, "s3cr3t-client") {
+			t.Errorf("%s leaks the keycloak secret: %s", name, s)
+		}
+	}
+	if !strings.Contains(string(b), `"keycloak_secret":"***"`) {
+		t.Errorf("json does not show the keycloak secret as masked: %s", b)
+	}
+	if cfg.KeycloakSecret != "s3cr3t-client" {
+		t.Errorf("masking changed the loaded keycloak secret to %q", cfg.KeycloakSecret)
+	}
+}
+
 func captureStdout(t *testing.T, f func()) string {
 	t.Helper()
 	r, w, err := os.Pipe()

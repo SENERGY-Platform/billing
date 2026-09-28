@@ -45,7 +45,7 @@ type ConfigStruct struct {
 
 	KeycloakUrl    string `json:"keycloak_url"`
 	KeycloakClient string `json:"keycloak_client"`
-	KeycloakSecret string `json:"keycloak_secret"`
+	KeycloakSecret string `json:"keycloak_secret" config:"secret"`
 
 	Debug      bool   `json:"debug"`
 	LogHandler string `json:"log_handler"`
