@@ -5,7 +5,7 @@ go 1.26.3
 require (
 	github.com/Nerzal/gocloak/v13 v13.9.0
 	github.com/SENERGY-Platform/cost-calculator v0.0.31
-	github.com/SENERGY-Platform/gin-middleware v0.14.1
+	github.com/SENERGY-Platform/gin-middleware v0.14.2
 	github.com/gin-contrib/requestid v1.0.6
 	github.com/gin-gonic/gin v1.12.0
 	github.com/google/uuid v1.6.0
